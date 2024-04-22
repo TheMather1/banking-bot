@@ -1,0 +1,7 @@
+logging.level.pathfinder: DEBUG
+spring:
+  datasource:
+    url: jdbc:h2:file:./Database
+  jpa:
+    hibernate:
+      ddl-auto: update

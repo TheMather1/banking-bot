@@ -22,13 +22,20 @@ repositories {
             password = System.getenv("GITHUB_TOKEN")
         }
     }
+    maven {
+        url = uri("https://maven.pkg.github.com/TheMather1/JDA-Chewtils")
+        credentials {
+            username = "token"
+            password = System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
 
 dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
     implementation("com.h2database", "h2", "2.2.224")
-    implementation("pw.chew", "jda-chewtils", "2.0-SNAPSHOT")
+    implementation("pw.chew", "jda-chewtils", "2.2" /*0-SNAPSHOT"*/)
     implementation("javax.servlet", "jstl", "1.2")
     implementation("net.dv8tion", "JDA", "5.0.0-beta.11")
     implementation("no.mather.ttrpg", "dice-syntax", "0.1.2")

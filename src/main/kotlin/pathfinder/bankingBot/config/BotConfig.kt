@@ -34,6 +34,8 @@ class BotConfig {
             .setRequestTimeoutRetry(false).setMaxReconnectDelay(32)
             .build().apply {
                 addEventListener(commandClient, eventWaiter)
+                logger.info("Adding commands: ${commandClient.slashCommands.map { it.name }}")
+                logger.info("Adding context menus: ${commandClient.contextMenus.map { it.name }}")
                 awaitReady()
             }
 }

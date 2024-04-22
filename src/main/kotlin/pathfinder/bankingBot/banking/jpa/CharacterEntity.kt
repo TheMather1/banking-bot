@@ -14,7 +14,8 @@ class CharacterEntity(
     @ManyToOne
     @JoinColumn(name = "BANK_ID", nullable = false)
     val bank: BankEntity,
-    val playerId: Long,
+    @Column(nullable = true)
+    val playerId: Long?,
     val name: String,
     @OneToMany(fetch = EAGER, cascade = [ALL])
     val accounts: MutableList<AccountEntity> = mutableListOf()

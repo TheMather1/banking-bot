@@ -1,7 +1,6 @@
 /.idea/
 /.gradle/
 /build/
-/gradle/
 /Database.mv.db
 /Database.trace.db
 /session_data.db

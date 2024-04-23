@@ -1,5 +1,7 @@
 package pathfinder.bankingBot.banking.jpa
 
+import net.dv8tion.jda.api.EmbedBuilder
+import pathfinder.bankingBot.banking.jpa.Frequency.MONTHLY
 import java.io.Serializable
 import javax.persistence.*
 import javax.persistence.GenerationType.IDENTITY
@@ -13,7 +15,14 @@ class AccountTypeEntity(
     @ManyToOne
     @JoinColumn(name = "BANK_ID")
     val bank: BankEntity,
-    val name: String,
-    var interestRate: String): Serializable {
+    var name: String,
+    var interestRate: String,
+    @Enumerated(EnumType.STRING)
+    var frequency: Frequency = MONTHLY
+): Serializable {
+    fun asEmbed(numAccounts: Int) = EmbedBuilder().setTitle(name).addField("Interest rate", interestRate, false)
+        .addField("Interest frequency", frequency.name.lowercase().replaceFirstChar { it.uppercase() }, false)
+        .setFooter("$numAccounts accounts of type").build()
+
     override fun toString() = name
 }

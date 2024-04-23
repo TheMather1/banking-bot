@@ -32,7 +32,6 @@ class AccountEntity(
         balance += tValue
         if (actor == null) log("$character deposited $tValue.")
         else  log("${actor.effectiveName} deposited $tValue.")
-//        return Transaction(DEPOSIT, tValue, this, actor)
     }
 
     fun withdraw(value: Double, actor: User? = null) {
@@ -40,35 +39,30 @@ class AccountEntity(
         balance -= tValue
         if (actor == null) log("$character withdrew $tValue.")
         else  log("${actor.effectiveName} withdrew $tValue.")
-//        return Transaction(WITHDRAW, tValue, actor, this)
     }
 
     fun send(value: Double, recipient: AccountEntity) {
         val tValue = truncateToCopper(value)
         balance -= tValue
         log("Sent $tValue to ${recipient.character} - $recipient.")
-//        return Transaction(TRANSFER, tValue, recipient, this)
     }
 
     fun receive(value: Double, sender: AccountEntity) {
         val tValue = truncateToCopper(value)
         balance += tValue
         log("Received $tValue from ${sender.character} - $sender.")
-//        return Transaction(TRANSFER, tValue, recipient, this)
     }
 
     fun interest() {
         val tValue = truncateToCopper(accountType.interestRate.toDouble()/100 * balance)
         balance += tValue
         log("Gained $tValue in interest.")
-//        return Transaction(INTEREST, tValue, this, this)
     }
 
     fun set(value: Double, actor: User) {
         val tValue = truncateToCopper(value)
         balance = tValue
         log("${actor.effectiveName} set balance to $value.")
-        //return Transaction(SET, tValue, this, actor)
     }
 
     private fun log(description: String) {

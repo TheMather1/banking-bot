@@ -4,6 +4,9 @@ import java.time.DayOfWeek.MONDAY
 import java.time.OffsetDateTime
 
 enum class Frequency {
+    NEVER {
+        override fun matches(offsetDateTime: OffsetDateTime) = false
+    },
     DAILY {
         override fun matches(offsetDateTime: OffsetDateTime) = true
     },

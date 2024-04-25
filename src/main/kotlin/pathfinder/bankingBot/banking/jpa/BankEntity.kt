@@ -11,10 +11,10 @@ import java.io.Serializable
 class BankEntity(
     @Id
     val id: Long,
-    @OneToMany(fetch = EAGER, cascade = [ALL])
+    @OneToMany(fetch = EAGER, cascade = [ALL], mappedBy = "bank")
 //    @LazyCollection(LazyCollectionOption.FALSE)
     val characters: MutableList<CharacterEntity> = mutableListOf(),
-    @OneToMany(fetch = EAGER, cascade = [ALL])
+    @OneToMany(fetch = EAGER, cascade = [ALL], mappedBy = "bank")
 //    @LazyCollection(LazyCollectionOption.FALSE)
     val accountTypes: MutableList<AccountTypeEntity> = mutableListOf(),
     var logChannel: Long? = null

@@ -16,8 +16,9 @@ class CharacterEntity(
     val bank: BankEntity,
     @Column(nullable = true)
     val playerId: Long?,
+    @Column(nullable = false)
     val name: String,
-    @OneToMany(fetch = EAGER, cascade = [ALL])
+    @OneToMany(fetch = EAGER, cascade = [ALL], mappedBy = "character")
     val accounts: MutableList<AccountEntity> = mutableListOf()
 ) : Paginatable {
     override fun asEmbed() = EmbedBuilder().setTitle(name).apply {

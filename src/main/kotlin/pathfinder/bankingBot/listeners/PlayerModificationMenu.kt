@@ -213,7 +213,7 @@ class PlayerModificationMenu(
                 interaction.deferEdit {
                     val type = interaction.values.first()
                     val accountType = accountTypes.first { it.id.toString() == type }
-                    val account = AccountEntity(0, character, accountType)
+                    val account = AccountEntity(character = character, accountType = accountType)
 //                accountRepository.saveAndFlush(account)
                     character.accounts.add(account)
                     characterRepository.saveAndFlush(character)

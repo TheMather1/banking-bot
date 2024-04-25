@@ -7,19 +7,20 @@ import net.dv8tion.jda.api.entities.User
 import java.lang.Math.round
 
 @Entity
-@Table(name = "PLAYER_ACCOUNTS")
+@Table(name = "ACCOUNTS")
 class AccountEntity(
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    val id: Long,
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0,
     @ManyToOne
-    @JoinColumn(name = "CHARACTER_ID")
+    @JoinColumn(name = "CHARACTER_ID", nullable = false)
     val character: CharacterEntity,
     @ManyToOne
-    @JoinColumn(name = "ACCOUNT_TYPE_ID")
+    @JoinColumn(name = "ACCOUNT_TYPE_ID", nullable = false)
     val accountType: AccountTypeEntity,
     @OneToMany(targetEntity = LogEntity::class, mappedBy = "account", fetch = FetchType.EAGER, cascade = [ALL])
     val logs: MutableList<LogEntity> = mutableListOf(),
+    @Column(nullable = false)
     var balance: Double = 0.0
 ) : Paginatable {
 

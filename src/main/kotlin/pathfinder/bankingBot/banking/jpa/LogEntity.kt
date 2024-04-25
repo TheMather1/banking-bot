@@ -12,9 +12,11 @@ class LogEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
     @ManyToOne(targetEntity = AccountEntity::class)
-    @JoinColumn(name = "ACCOUNT_ID")
+    @JoinColumn(name = "ACCOUNT_ID", nullable = false)
     val account: AccountEntity,
+    @Column(nullable = false)
     val description: String,
+    @Column(nullable = false)
     val timestamp: OffsetDateTime = OffsetDateTime.now()
 ) {
     override fun toString() = description

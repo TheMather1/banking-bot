@@ -79,7 +79,7 @@ class AccountTypeCommand(
                     val bank = bankService.getBank(e.guild!!)
                     bank.accountTypes.add(AccountTypeEntity(0, bank, name, dice))
                     bankService.persist(bank)
-                    hook.editOriginal("Account type $name created.").queue()
+                    hook.editOriginal("Account type $name created.").setComponents().queue()
                 } catch (_: DiceParseException) {
                     val retryButton = retryButton(e.idLong)
                     val cancelButton = cancelButton(e.idLong)
@@ -204,7 +204,7 @@ class AccountTypeCommand(
         private fun nameField(default: String? = null) =
             TextInput.create("name", "Name", TextInputStyle.SHORT).setPlaceholder("Name").setRequired(true).setValue(default).build()
         private fun diceField(default: String? = null) =
-            TextInput.create("dice", "Interest (%)", TextInputStyle.PARAGRAPH).setPlaceholder("1d20+1").setRequired(true).setValue(default).build()
+            TextInput.create("dice", "Interest (%)", TextInputStyle.SHORT).setPlaceholder("1d20+1").setRequired(true).setValue(default).build()
         private fun accountTypeModal(triggerId: Long, defaultName: String? = null, defaultDice: String? = null) = Modal.create("account_type_$triggerId", "Account Type:")
             .addActionRow(nameField(defaultName))
             .addActionRow(diceField(defaultDice)).build()

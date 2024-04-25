@@ -14,11 +14,14 @@ class AccountTypeEntity(
     @GeneratedValue(strategy = IDENTITY)
     val id: Long,
     @ManyToOne
-    @JoinColumn(name = "BANK_ID")
+    @JoinColumn(name = "BANK_ID", nullable = false)
     val bank: BankEntity,
+    @Column(nullable = false)
     var name: String,
+    @Column(nullable = false)
     var interestRate: String,
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     var frequency: Frequency = MONTHLY
 ): Serializable {
     fun asEmbed(numAccounts: Int) = EmbedBuilder().setTitle(name).addField("Interest rate", "$interestRate%", false)

@@ -1,10 +1,10 @@
 package pathfinder.bankingBot.service
 
+import jakarta.persistence.PostPersist
 import net.dv8tion.jda.api.JDA
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import pathfinder.bankingBot.banking.jpa.LogEntity
-import javax.persistence.PostPersist
 
 @Service
 class LogService {

@@ -1,10 +1,9 @@
-package pathfinder.bankingBot.listeners.support
+package pathfinder.bankingBot.listeners
 
 import com.jagrosh.jdautilities.command.SlashCommandEvent
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter
 import org.springframework.stereotype.Service
 import pathfinder.bankingBot.channelOption
-import pathfinder.bankingBot.listeners.SlashCommandInterface
 import pathfinder.bankingBot.service.BankService
 
 @Service

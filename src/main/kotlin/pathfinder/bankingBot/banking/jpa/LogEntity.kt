@@ -1,8 +1,8 @@
 package pathfinder.bankingBot.banking.jpa
 
+import jakarta.persistence.*
 import pathfinder.bankingBot.service.LogService
 import java.time.OffsetDateTime
-import javax.persistence.*
 
 @Entity
 @EntityListeners(LogService::class)

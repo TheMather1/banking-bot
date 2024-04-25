@@ -1,9 +1,9 @@
 package pathfinder.bankingBot.banking.jpa
 
+import jakarta.persistence.*
+import jakarta.persistence.CascadeType.ALL
+import jakarta.persistence.FetchType.EAGER
 import net.dv8tion.jda.api.EmbedBuilder
-import javax.persistence.*
-import javax.persistence.CascadeType.ALL
-import javax.persistence.FetchType.EAGER
 
 @Entity
 @Table(name = "CHARACTERS")

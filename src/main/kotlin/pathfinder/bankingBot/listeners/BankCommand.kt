@@ -17,9 +17,6 @@ import pathfinder.bankingBot.banking.jpa.AccountEntity
 import pathfinder.bankingBot.banking.jpa.CharacterEntity
 import pathfinder.bankingBot.banking.jpa.CharacterRepository
 import pathfinder.bankingBot.editActionComponents
-import pathfinder.bankingBot.listeners.support.waitForButton
-import pathfinder.bankingBot.listeners.support.waitForModal
-import java.time.OffsetDateTime
 import java.util.concurrent.TimeUnit.MINUTES
 
 @Service
@@ -34,7 +31,7 @@ class BankCommand(
             val cancelButton = cancelButton(event.idLong)
             if (characters.isEmpty()) hook.editOriginal("You have no characters.")
                 .setActionRow(cancelButton).queue {
-                    eventWaiter.waitForButton(cancelButton, event.user) { it.message.delete().queue() }
+                    eventWaiter.waitForCancelButton(cancelButton, event.user)
                 }
             else {
                 characterPaginator(characters, hook, event.user)
@@ -53,7 +50,7 @@ class BankCommand(
             eventWaiter.waitForButton(accountDeleteButton, user) {
                 if(!withdraw(it, account)) accountMenu(message, account, user)
             }
-            eventWaiter.waitForButton(cancelButton, user) { it.message.delete().queue() }
+            eventWaiter.waitForCancelButton(cancelButton, user)
         }
     }
 
@@ -142,9 +139,6 @@ class BankCommand(
         }
         return success
     }
-
-    fun Message.hasTimedOut() = (timeEdited ?: timeCreated)
-        .isAfter(OffsetDateTime.now().plusMinutes(5))
 
     companion object {
         private val goldField = TextInput.create("gold", "Enter value:", SHORT).setPlaceholder("0.00").setRequired(true).build()

@@ -8,13 +8,11 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.requests.GatewayIntent.GUILD_MEMBERS
+import net.dv8tion.jda.api.utils.cache.CacheFlag.*
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-
-//import pathfinder.bankingBot.listeners.BankCommand
-//import pathfinder.bankingBot.listeners.CommonListener
 
 @Configuration
 @ConfigurationProperties("pathfinder.banking.bot")
@@ -31,6 +29,7 @@ class BotConfig {
     @Bean
     fun bot(commandClient: CommandClient, eventWaiter: EventWaiter) =
         JDABuilder.createDefault(token, GUILD_MEMBERS).setActivity(Activity.playing("the market"))
+            .disableCache(VOICE_STATE, EMOJI, STICKER, SCHEDULED_EVENTS)
             .setRequestTimeoutRetry(false).setMaxReconnectDelay(32)
             .build().apply {
                 addEventListener(commandClient, eventWaiter)

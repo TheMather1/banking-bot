@@ -23,12 +23,8 @@ import pathfinder.bankingBot.banking.jpa.CharacterRepository
 import pathfinder.bankingBot.deferEdit
 import pathfinder.bankingBot.editActionComponents
 import pathfinder.bankingBot.listeners.input.AccountTypeField
-import pathfinder.bankingBot.listeners.support.waitForButton
-import pathfinder.bankingBot.listeners.support.waitForModal
-import pathfinder.bankingBot.listeners.support.waitForSelection
 import pathfinder.bankingBot.prepend
 import pathfinder.bankingBot.service.BankService
-import java.time.OffsetDateTime
 import java.util.concurrent.TimeUnit.MINUTES
 import kotlin.concurrent.thread
 
@@ -37,7 +33,7 @@ class PlayerModificationMenu(
     private val bankService: BankService,
     private val characterRepository: CharacterRepository,
     private val eventWaiter: EventWaiter
-) : UserContextMenu() {
+) : InteractionTemplate, UserContextMenu() {
 
     init {
         name = "Modify bank details"
@@ -53,7 +49,7 @@ class PlayerModificationMenu(
                 .editOriginal("${target.effectiveName} has no characters.")
                 .setActionRow(characterAddButton, cancelButton).queue {
                     eventWaiter.waitForButton(characterAddButton, event.user, action = ::addCharacter)
-                    eventWaiter.waitForButton(cancelButton, event.user) { it.message.delete().queue() }
+                    eventWaiter.waitForCancelButton(cancelButton, event.user)
                 }
             else {
                 val characterBrowseButton = characterBrowseButton(event.idLong)
@@ -64,7 +60,7 @@ class PlayerModificationMenu(
                         eventWaiter.waitForButton(characterBrowseButton, event.user) { interaction ->
                             interaction.deferEdit().queue { characterPaginator(characters, it, interaction.user) }
                         }
-                        eventWaiter.waitForButton(cancelButton, event.user) { it.message.delete().queue() }
+                        eventWaiter.waitForCancelButton(cancelButton, event.user)
                     }
             }
         }
@@ -86,14 +82,14 @@ class PlayerModificationMenu(
             message.editActionComponents(accountAddButton, characterDeleteButton, cancelButton).setContent(null).queue {
                 eventWaiter.waitForButton(accountAddButton, user) { addAccount(it, character) }
                 eventWaiter.waitForButton(characterDeleteButton, user) { deleteCharacter(it, character) }
-                eventWaiter.waitForButton(cancelButton, user) { it.message.delete().queue() }
+                eventWaiter.waitForCancelButton(cancelButton, user)
             }
         } else {
             message.editActionComponents(accountAddButton, accountBrowseButton, characterDeleteButton, cancelButton).setContent(null).queue {
                 eventWaiter.waitForButton(accountAddButton, user) { addAccount(it, character) }
                 eventWaiter.waitForButton(accountBrowseButton, user) { interaction -> interaction.deferEdit().queue { accountPaginator(character.accounts, it, user) } }
                 eventWaiter.waitForButton(characterDeleteButton, user) { deleteCharacter(it, character) }
-                eventWaiter.waitForButton(cancelButton, user) { it.message.delete().queue() }
+                eventWaiter.waitForCancelButton(cancelButton, user)
             }
         }
     }
@@ -105,7 +101,7 @@ class PlayerModificationMenu(
         message.editActionComponents(accountEditButton, accountDeleteButton, cancelButton).setContent(null).queue {
             eventWaiter.waitForButton(accountEditButton, user) { editAccount(it, account) }
             eventWaiter.waitForButton(accountDeleteButton, user) { deleteAccount(it, account) }
-            eventWaiter.waitForButton(cancelButton, user) { it.message.delete().queue() }
+            eventWaiter.waitForCancelButton(cancelButton, user)
         }
     }
 
@@ -251,9 +247,6 @@ class PlayerModificationMenu(
         }
     }
 
-    fun Message.hasTimedOut() = (timeEdited ?: timeCreated)
-        .isAfter(OffsetDateTime.now().plusMinutes(5))
-
     companion object {
         private val characterNameField =
             TextInput.create("character_name", "Name", SHORT).setPlaceholder("John Doe").setRequired(true).build()
@@ -266,7 +259,6 @@ class PlayerModificationMenu(
         private fun accountBrowseButton(triggerId: Long) = ButtonImpl("browse_account_$triggerId", "Browse accounts", PRIMARY, false, null)
         private fun accountEditButton(triggerId: Long) = ButtonImpl("edit_account_$triggerId", "Edit balance", PRIMARY, false, null)
         private fun accountDeleteButton(triggerId: Long) = ButtonImpl("delete_account_$triggerId", "Delete account", DANGER, false, null)
-        private fun cancelButton(triggerId: Long) = ButtonImpl("cancel_$triggerId", "Cancel", DANGER, false, null)
         private fun characterAddModal(triggerId: Long) =
             Modal.create("deposit_${triggerId}", "Add character").addActionRow(characterNameField).build()
         private fun accountEditModal(triggerId: Long) =

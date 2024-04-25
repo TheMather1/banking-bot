@@ -20,15 +20,12 @@ import pathfinder.bankingBot.banking.jpa.AccountEntity
 import pathfinder.bankingBot.banking.jpa.CharacterEntity
 import pathfinder.bankingBot.banking.jpa.CharacterRepository
 import pathfinder.bankingBot.deferEdit
-import pathfinder.bankingBot.listeners.support.waitForButton
-import pathfinder.bankingBot.listeners.support.waitForModal
-import pathfinder.bankingBot.listeners.support.waitForSelection
 
 @Service
 class NPCSendMenu(
     private val characterRepository: CharacterRepository,
     private val eventWaiter: EventWaiter
-) : UserContextMenu() {
+) : InteractionTemplate, UserContextMenu() {
 
     init {
         name = "Send money from NPC"
@@ -74,6 +71,7 @@ class NPCSendMenu(
         }
     }
 
+    @Suppress("NAME_SHADOWING")
     private fun handleInput(
         id: String,
         hook: InteractionHook,

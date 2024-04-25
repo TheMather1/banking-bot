@@ -3,4 +3,6 @@
 /build/
 /Database.mv.db
 /Database.trace.db
+/Database.lock.db
 /session_data.db
+/src/main/resources/application-local.yml

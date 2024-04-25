@@ -20,13 +20,9 @@ import org.springframework.stereotype.Service
 import pathfinder.bankingBot.banking.jpa.AccountEntityRepository
 import pathfinder.bankingBot.banking.jpa.AccountTypeEntity
 import pathfinder.bankingBot.banking.jpa.Frequency
-import pathfinder.bankingBot.listeners.support.waitForButton
-import pathfinder.bankingBot.listeners.support.waitForModal
-import pathfinder.bankingBot.listeners.support.waitForSelection
 import pathfinder.bankingBot.service.BankService
 import pathfinder.diceSyntax.DiceParser
 import pathfinder.diceSyntax.components.DiceParseException
-import java.time.OffsetDateTime
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
@@ -50,7 +46,7 @@ class AccountTypeCommand(
                 .editOriginal("There are no registered account types.")
                 .setActionRow(accountTypeAddButton, cancelButton).queue {
                     eventWaiter.waitForButton(accountTypeAddButton, event.user, action = ::addAccountType)
-                    eventWaiter.waitForButton(cancelButton, event.user) { it.message.delete().queue() }
+                    eventWaiter.waitForCancelButton(cancelButton, event.user)
                 }
             else {
                 val accountTypeBrowseButton = accountTypeBrowseButton(event.idLong)
@@ -61,7 +57,7 @@ class AccountTypeCommand(
                         eventWaiter.waitForButton(accountTypeBrowseButton, event.user) { interaction ->
                             interaction.deferEdit().queue { accountTypePaginator(accountTypes, it, interaction.user) }
                         }
-                        eventWaiter.waitForButton(cancelButton, event.user) { it.message.delete().queue() }
+                        eventWaiter.waitForCancelButton(cancelButton, event.user)
                     }
             }
         }
@@ -89,7 +85,7 @@ class AccountTypeCommand(
                     val cancelButton = cancelButton(e.idLong)
                     hook.editOriginal("$dice is not valid dice syntax.").setEmbeds().setComponents(ActionRow.of(retryButton, cancelButton)).queue()
                     eventWaiter.waitForButton(retryButton, e.user) { addAccountType(it) }
-                    eventWaiter.waitForButton(cancelButton, e.user) { it.message.delete().queue() }
+                    eventWaiter.waitForCancelButton(cancelButton, e.user)
                 }
             }
         }
@@ -150,7 +146,7 @@ class AccountTypeCommand(
             }
             eventWaiter.waitForButton(accountTypeEditButton, user) { editAccountType(it, accountTypeEntity) }
             eventWaiter.waitForButton(accountTypeDeleteButton, user) { deleteAccountType(it, accountTypeEntity) }
-            eventWaiter.waitForButton(cancelButton, user) { it.message.delete().queue() }
+            eventWaiter.waitForCancelButton(cancelButton, user)
         }
     }
 
@@ -174,7 +170,7 @@ class AccountTypeCommand(
                     val cancelButton = cancelButton(e.idLong)
                     hook.editOriginal("$dice is not valid dice syntax.").setEmbeds().setComponents(ActionRow.of(retryButton, cancelButton)).queue()
                     eventWaiter.waitForButton(retryButton, e.user) { editAccountType(it, accountType) }
-                    eventWaiter.waitForButton(cancelButton, e.user) { it.message.delete().queue() }
+                    eventWaiter.waitForCancelButton(cancelButton, e.user)
                 }
             }
         }
@@ -190,13 +186,8 @@ class AccountTypeCommand(
 
     }
 
-    fun Message.hasTimedOut() = (timeEdited ?: timeCreated)
-        .isAfter(OffsetDateTime.now().plusMinutes(5))
-
     companion object {
         private fun accountTypeAddButton(triggerId: Long) = ButtonImpl("add_account_type_$triggerId", "Add account type", ButtonStyle.SUCCESS, false, null)
-        private fun cancelButton(triggerId: Long) = ButtonImpl("cancel_$triggerId", "Cancel",
-            ButtonStyle.DANGER, false, null)
         private fun accountTypeBrowseButton(triggerId: Long) = ButtonImpl("browse_account_types_$triggerId", "Browse account types",
             ButtonStyle.PRIMARY, false, null)
         private fun accountTypeEditButton(triggerId: Long) = ButtonImpl("edit_account_type_$triggerId", "Edit interest",
@@ -213,7 +204,7 @@ class AccountTypeCommand(
         private fun nameField(default: String? = null) =
             TextInput.create("name", "Name", TextInputStyle.SHORT).setPlaceholder("Name").setRequired(true).setValue(default).build()
         private fun diceField(default: String? = null) =
-            TextInput.create("dice", "Multiplier", TextInputStyle.PARAGRAPH).setPlaceholder("1d20+1").setRequired(true).setValue(default).build()
+            TextInput.create("dice", "Interest (%)", TextInputStyle.PARAGRAPH).setPlaceholder("1d20+1").setRequired(true).setValue(default).build()
         private fun accountTypeModal(triggerId: Long, defaultName: String? = null, defaultDice: String? = null) = Modal.create("account_type_$triggerId", "Account Type:")
             .addActionRow(nameField(defaultName))
             .addActionRow(diceField(defaultDice)).build()

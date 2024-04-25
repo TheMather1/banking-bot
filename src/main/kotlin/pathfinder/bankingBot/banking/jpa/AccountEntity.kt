@@ -1,10 +1,10 @@
 package pathfinder.bankingBot.banking.jpa
 
+import jakarta.persistence.*
+import jakarta.persistence.CascadeType.ALL
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.User
-import javax.persistence.*
-import javax.persistence.CascadeType.ALL
-import kotlin.math.floor
+import java.lang.Math.round
 
 @Entity
 @Table(name = "PLAYER_ACCOUNTS")
@@ -54,8 +54,8 @@ class AccountEntity(
     }
 
     fun interest() {
-        val tValue = truncateToCopper(accountType.interestRate.toDouble()/100 * balance)
-        balance += tValue
+        val tValue = truncateToCopper(accountType.interestPercent/100 * balance)
+        balance = truncateToCopper(balance + tValue)
         log("Gained $tValue in interest.")
     }
 
@@ -72,5 +72,5 @@ class AccountEntity(
     override fun asEmbed() = EmbedBuilder().setTitle(character.name).addField("Type", accountType.name, true)
     .addField("Balance", "$balance gp", true).build()
 
-    private fun truncateToCopper(value: Double) = floor(value * 100) / 100
+    private fun truncateToCopper(value: Double): Double = round(value*100)/100.0
 }

@@ -11,8 +11,12 @@ class BankService(val bankRepository: BankRepository) {
 
     fun getBank(id: Long): BankEntity = bankRepository.findByIdOrNull(id) ?: bankRepository.saveAndFlush(BankEntity(id))
 
+    fun getBanks(ids: List<Long>): MutableList<BankEntity> = bankRepository.findAllById(ids)
+
     fun getBank(guild: Guild): BankEntity = getBank(guild.idLong)
-    fun persist(bank: BankEntity) {
-        bankRepository.saveAndFlush(bank)
-    }
+
+    fun getBanksByGuild(guilds: List<Guild>): List<BankEntity> = getBanks(guilds.map { it.idLong })
+    fun persist(bank: BankEntity): BankEntity = bankRepository.saveAndFlush(bank)
+
+    fun persistAll(banks: List<BankEntity>): MutableList<BankEntity> = bankRepository.saveAllAndFlush(banks)
 }

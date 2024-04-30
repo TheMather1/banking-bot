@@ -1,6 +1,7 @@
 package pathfinder.bankingBot.banking.jpa
 
 import jakarta.persistence.*
+import jakarta.persistence.CascadeType.ALL
 import jakarta.persistence.GenerationType.IDENTITY
 import net.dv8tion.jda.api.EmbedBuilder
 import pathfinder.bankingBot.banking.jpa.Frequency.MONTHLY
@@ -22,7 +23,9 @@ class AccountTypeEntity(
     var interestRate: String,
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    var frequency: Frequency = MONTHLY
+    var frequency: Frequency = MONTHLY,
+    @OneToOne(mappedBy = "sourceAccountType", cascade = [ALL], optional = true)
+    var taxConfig: TaxConfig? = null
 ): Serializable {
     fun asEmbed(numAccounts: Int) = EmbedBuilder().setTitle(name).addField("Interest rate", "$interestRate%", false)
         .addField("Interest frequency", frequency.name.lowercase().replaceFirstChar { it.uppercase() }, false)

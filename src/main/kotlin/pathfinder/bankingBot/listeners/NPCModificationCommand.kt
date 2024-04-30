@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service
 import pathfinder.bankingBot.banking.jpa.AccountEntity
 import pathfinder.bankingBot.banking.jpa.CharacterEntity
 import pathfinder.bankingBot.banking.jpa.CharacterRepository
-import pathfinder.bankingBot.deferEdit
 import pathfinder.bankingBot.editActionComponents
 import pathfinder.bankingBot.listeners.input.AccountTypeField
 import pathfinder.bankingBot.prepend
@@ -174,7 +173,7 @@ class NPCModificationCommand(
         val modal = characterAddModal(event.idLong)
         event.replyModal(modal).queue()
         eventWaiter.waitForModal(modal, event) { e ->
-            e.deferEdit {
+            e.deferEdit().queue {
                 val name = e.interaction.getValue(characterNameField.id)!!.asString
                 val bank = bankService.getBank(e.guild!!)
                 val character = CharacterEntity(
@@ -183,9 +182,7 @@ class NPCModificationCommand(
                     name = name
                 )
                 characterRepository.saveAndFlush(character)
-                queue {
-                    it.editOriginal("Character $character added.").setComponents().setEmbeds().queue()
-                }
+                it.editOriginal("Character $character added.").setComponents().setEmbeds().queue()
             }
         }
     }
@@ -202,16 +199,13 @@ class NPCModificationCommand(
                     .setActionRow(accountTypeField).setEmbeds().build()
             ).queue()
             eventWaiter.waitForSelection(accountTypeField, event.user) { interaction ->
-                interaction.deferEdit {
+                interaction.deferEdit().queue {
                     val type = interaction.values.first()
                     val accountType = accountTypes.first { it.id.toString() == type }
                     val account = AccountEntity(0, character, accountType)
-//                accountRepository.saveAndFlush(account)
                     character.accounts.add(account)
                     characterRepository.saveAndFlush(character)
-                    queue {
-                        it.editOriginal("$account account added to $character.").setComponents().setEmbeds().queue()
-                    }
+                    it.editOriginal("$account account added to $character.").setComponents().setEmbeds().queue()
                 }
             }
         }
@@ -221,19 +215,15 @@ class NPCModificationCommand(
         val modal = accountEditModal(event.idLong)
         event.replyModal(modal).queue()
         eventWaiter.waitForModal(modal, event) { e ->
-            e.deferEdit {
+            e.deferEdit().queue {
                 val value = e.interaction.getValue(goldField.id)!!.asString
                 try {
                     val num = value.toDouble()
                     account.set(num, e.user)
                     characterRepository.saveAndFlush(account.character)
-                    queue {
-                        it.editOriginal("${account.fullName()} balance set to $num.").setComponents().setEmbeds().queue()
-                    }
+                    it.editOriginal("${account.fullName()} balance set to $num.").setComponents().setEmbeds().queue()
                 } catch (_: NumberFormatException) {
-                    queue {
-                        it.editOriginal("$value is not a valid number.").queue()
-                    }
+                    it.editOriginal("$value is not a valid number.").queue()
                 }
             }
         }

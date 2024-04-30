@@ -7,7 +7,8 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.interactions.InteractionHook
-import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.*
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.PRIMARY
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SUCCESS
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle.SHORT
 import net.dv8tion.jda.api.interactions.modals.Modal
@@ -127,8 +128,9 @@ class BankCommand(
                 try {
                     val num = value.toDouble()
                     if (num > 0) {
+                        val taxAccount = account.accountType.taxConfig?.targetAccount
                         account.deposit(num)
-                        characterRepository.saveAndFlush(account.character)
+                        characterRepository.saveAllAndFlush(listOfNotNull(account.character, taxAccount?.character))
                         success = true
                         it.editOriginal("${account.character} deposited $num to $account.").setComponents().setEmbeds()
                     } else it.editOriginal("You must deposit a positive amount.")
@@ -144,7 +146,6 @@ class BankCommand(
         private val goldField = TextInput.create("gold", "Enter value:", SHORT).setPlaceholder("0.00").setRequired(true).build()
         private fun depositButton(triggerId: Long) = ButtonImpl("edit_account_$triggerId", "Deposit", SUCCESS, false, null)
         private fun withdrawButton(triggerId: Long) = ButtonImpl("delete_account_$triggerId", "Withdraw", PRIMARY, false, null)
-        private fun cancelButton(triggerId: Long) = ButtonImpl("cancel_$triggerId", "Cancel", DANGER, false, null)
         private fun depositModal(triggerId: Long) =
             Modal.create("deposit_${triggerId}", "Deposit").addActionRow(goldField).build()
         private fun withdrawModal(triggerId: Long) =

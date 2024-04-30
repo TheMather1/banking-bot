@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service
 import pathfinder.bankingBot.banking.jpa.AccountEntity
 import pathfinder.bankingBot.banking.jpa.CharacterEntity
 import pathfinder.bankingBot.banking.jpa.CharacterRepository
-import pathfinder.bankingBot.deferEdit
 
 @Service
 class NPCSendMenu(
@@ -215,24 +214,24 @@ class NPCSendMenu(
         val modal = goldSendModal(event.idLong)
         event.replyModal(modal).queue {
             eventWaiter.waitForModal(modal, event) { modalEvent ->
-                modalEvent.deferEdit {
+                modalEvent.deferEdit().queue {
                     val input = modalEvent.getValue(goldField.id)!!.asString
                     try {
                         val gold = input.toDouble()
                         when {
-                            sender.id == recipient.id -> setContent("Sending account cannot be the same as the recipient.")
-                            gold <= 0 -> setContent("You must send a positive amount.")
-                            gold > sender.balance -> setContent("You cannot send more gold than you have.")
+                            sender.id == recipient.id -> it.editOriginal("Sending account cannot be the same as the recipient.")
+                            gold <= 0 -> it.editOriginal("You must send a positive amount.")
+                            gold > sender.balance -> it.editOriginal("You cannot send more gold than you have.")
                             else -> {
                                 sender.send(gold, recipient)
                                 recipient.receive(gold, sender)
                                 characterRepository.saveAllAndFlush(listOf(sender.character, recipient.character))
                                 modalEvent.channel.sendMessage ("${sender.fullName()} sent $gold to ${recipient.fullName()}").queue()
-                                setComponents().setContent("Sent.")
+                                it.editOriginalComponents().setContent("Sent.")
                             }
                         }
                     } catch (_: NumberFormatException) {
-                        setContent("$input is not a valid number.")
+                        it.editOriginal("$input is not a valid number.")
                     }.queue()
                 }
             }

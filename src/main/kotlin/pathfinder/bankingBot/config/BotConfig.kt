@@ -28,7 +28,7 @@ class BotConfig {
 
     @Bean
     fun bot(commandClient: CommandClient, eventWaiter: EventWaiter) =
-        JDABuilder.createDefault(token, GUILD_MEMBERS).setActivity(Activity.playing("the market"))
+        JDABuilder.createDefault(token, GUILD_MEMBERS)
             .disableCache(VOICE_STATE, EMOJI, STICKER, SCHEDULED_EVENTS)
             .setRequestTimeoutRetry(false).setMaxReconnectDelay(32)
             .build().apply {
@@ -36,5 +36,6 @@ class BotConfig {
                 logger.info("Adding commands: ${commandClient.slashCommands.map { it.name }}")
                 logger.info("Adding context menus: ${commandClient.contextMenus.map { it.name }}")
                 awaitReady()
+                presence.setPresence(Activity.playing("the market"), true)
             }
 }

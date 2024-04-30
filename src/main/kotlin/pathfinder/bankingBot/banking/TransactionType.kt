@@ -1,4 +1,4 @@
-package pathfinder.bankingBot.banking.jpa
+package pathfinder.bankingBot.banking
 
 import jakarta.persistence.AttributeConverter
 

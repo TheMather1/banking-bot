@@ -19,7 +19,7 @@ import net.dv8tion.jda.internal.interactions.component.ButtonImpl
 import org.springframework.stereotype.Service
 import pathfinder.bankingBot.banking.jpa.AccountEntityRepository
 import pathfinder.bankingBot.banking.jpa.AccountTypeEntity
-import pathfinder.bankingBot.banking.jpa.Frequency
+import pathfinder.bankingBot.banking.Frequency
 import pathfinder.bankingBot.service.BankService
 import pathfinder.diceSyntax.DiceParser
 import pathfinder.diceSyntax.components.DiceParseException

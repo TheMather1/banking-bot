@@ -1,6 +1,7 @@
 package pathfinder.bankingBot.banking.jpa
 
 import jakarta.persistence.*
+import pathfinder.bankingBot.banking.TransactionType
 import pathfinder.bankingBot.truncateToCopper
 
 @Entity

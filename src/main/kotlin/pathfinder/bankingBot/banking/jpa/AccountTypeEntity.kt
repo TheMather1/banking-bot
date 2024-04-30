@@ -4,7 +4,8 @@ import jakarta.persistence.*
 import jakarta.persistence.CascadeType.ALL
 import jakarta.persistence.GenerationType.IDENTITY
 import net.dv8tion.jda.api.EmbedBuilder
-import pathfinder.bankingBot.banking.jpa.Frequency.MONTHLY
+import pathfinder.bankingBot.banking.Frequency
+import pathfinder.bankingBot.banking.Frequency.MONTHLY
 import pathfinder.diceSyntax.DiceParser
 import java.io.Serializable
 

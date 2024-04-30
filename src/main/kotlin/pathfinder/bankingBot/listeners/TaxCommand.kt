@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl
 import org.springframework.stereotype.Service
+import pathfinder.bankingBot.banking.TransactionType
 import pathfinder.bankingBot.banking.jpa.*
 import pathfinder.bankingBot.service.BankService
 import java.util.concurrent.TimeUnit

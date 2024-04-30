@@ -4,7 +4,8 @@ import jakarta.persistence.*
 import jakarta.persistence.CascadeType.ALL
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.User
-import pathfinder.bankingBot.banking.jpa.TransactionType.*
+import pathfinder.bankingBot.banking.TransactionType
+import pathfinder.bankingBot.banking.TransactionType.*
 import pathfinder.bankingBot.truncateToCopper
 
 @Entity

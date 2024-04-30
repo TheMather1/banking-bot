@@ -1,4 +1,4 @@
-package pathfinder.bankingBot.banking.jpa
+package pathfinder.bankingBot.banking
 
 import java.time.DayOfWeek.MONDAY
 import java.time.OffsetDateTime

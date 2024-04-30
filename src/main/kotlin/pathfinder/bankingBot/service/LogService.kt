@@ -19,7 +19,7 @@ class LogService {
         val guild = jda.getGuildById(bank.id)!!
         if (bank.logChannel != null) {
             val channel = guild.getTextChannelById(bank.logChannel!!)
-            channel?.sendMessage("${logEntity.account.fullName()} - ${logEntity.description}")?.queue()
+            channel?.sendMessage("${logEntity.account.fullName()} - ${logEntity.description}\nCurrent balance: ${logEntity.balance}")?.queue()
         }
     }
 

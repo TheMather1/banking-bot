@@ -17,6 +17,8 @@ class LogEntity(
     @Column(nullable = false)
     val description: String,
     @Column(nullable = false)
+    val balance: Double,
+    @Column(nullable = false)
     val timestamp: OffsetDateTime = OffsetDateTime.now()
 ) {
     override fun toString() = description

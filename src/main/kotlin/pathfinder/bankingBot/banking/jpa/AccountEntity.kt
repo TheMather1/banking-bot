@@ -74,7 +74,7 @@ class AccountEntity(
     }
 
     private fun log(description: String) {
-        logs.add(LogEntity(0, this, description))
+        logs.add(LogEntity(0, this, description, balance))
     }
 
     private fun tax(value: Double, type: TransactionType) = truncateToCopper(accountType.taxConfig?.tax(value, type, this) ?: value)

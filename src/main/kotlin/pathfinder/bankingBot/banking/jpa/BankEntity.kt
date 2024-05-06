@@ -17,8 +17,11 @@ class BankEntity(
     @OneToMany(fetch = EAGER, cascade = [ALL], mappedBy = "bank")
 //    @LazyCollection(LazyCollectionOption.FALSE)
     val accountTypes: MutableList<AccountTypeEntity> = mutableListOf(),
-    var logChannel: Long? = null
+    var logChannel: Long? = null,
 ): Serializable {
+    @OneToOne(fetch = EAGER, cascade = [ALL], mappedBy = "bank")
+    val downtimeConfig: DowntimeConfig = DowntimeConfig(0, this)
+
     @Transient
     lateinit var jda: JDA
 }

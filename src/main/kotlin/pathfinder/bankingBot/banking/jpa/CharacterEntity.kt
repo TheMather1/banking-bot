@@ -19,8 +19,11 @@ class CharacterEntity(
     @Column(nullable = false)
     val name: String,
     @OneToMany(fetch = EAGER, cascade = [ALL], mappedBy = "character")
-    val accounts: MutableList<AccountEntity> = mutableListOf()
+    val accounts: MutableList<AccountEntity> = mutableListOf(),
 ) : Paginatable {
+    @OneToOne(fetch = EAGER, cascade = [ALL], mappedBy = "character")
+    val downtimeOverride: DowntimeOverride = DowntimeOverride(0, this)
+
     override fun asEmbed() = EmbedBuilder().setTitle(name).apply {
         accounts.forEach {
             addField(it.accountType.name, "${it.balance} gp", false)

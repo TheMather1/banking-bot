@@ -28,6 +28,7 @@ import kotlin.concurrent.thread
 @Service
 class TaxCommand(
     private val bankService: BankService,
+    private val characterRepository: CharacterRepository,
     private val taxRepository: TaxRepository,
     eventWaiter: EventWaiter
 ) : SlashCommandInterface(eventWaiter, "tax_config", "Assign and modify tax rates for account types") {
@@ -85,7 +86,7 @@ class TaxCommand(
     }
 
     private fun taxMenu(message: Message, id: Long, accountTypeEntity: AccountTypeEntity, user: User) {
-        val npcs = accountTypeEntity.bank.characters.filter { it.playerId == null }
+        val npcs = characterRepository.getByBank_IdAndPlayerId(message.guildIdLong, null)
         val taxConfigureButton = taxConfigureButton(id)
         val taxDeleteButton = taxDeleteButton(id, accountTypeEntity.taxConfig == null)
         val cancelButton = cancelButton(id)
@@ -175,10 +176,10 @@ class TaxCommand(
         val accountSelectMenu = accountSelectMenu(eventId, recipient?.accounts, targetAccount, recipient == null)
         val subtractSelectMenu = subtractSelectMenu(eventId, subtract)
         val taxSaveButton = taxSaveButton(eventId, actions.isNullOrEmpty() || recipient == null || targetAccount == null || percentage == null)
-        val taxPercentageButton = taxPercentageButton(eventId)
+        val taxPercentageButton = taxPercentageButton(eventId, percentage)
         val cancelButton = cancelButton(eventId)
 
-        hook.editOriginal("Tax: $percentage%").setComponents(
+        hook.editOriginal("").setComponents(
             ActionRow.of(actionSelectMenu),
             ActionRow.of(recipientSelectMenu),
             ActionRow.of(accountSelectMenu),
@@ -267,7 +268,7 @@ class TaxCommand(
             ButtonStyle.SUCCESS, disabled, null)
         private fun taxDeleteButton(triggerId: Long, disabled: Boolean) = ButtonImpl("delete_tax_type_$triggerId", "Delete tax configuration",
             ButtonStyle.DANGER, disabled, null)
-        private fun taxPercentageButton(triggerId: Long) = ButtonImpl("percentage_tax_$triggerId", "Set percentage",
+        private fun taxPercentageButton(triggerId: Long, percentage: Int?) = ButtonImpl("percentage_tax_$triggerId", if(percentage != null) "$percentage%" else "Set percentage",
             ButtonStyle.PRIMARY, false, null)
         private fun actionSelectMenu(triggerId: Long, default: Collection<TransactionType>?) = StringSelectMenu.create("select_transaction_$triggerId")
             .addOptions(TransactionType.entries.map { SelectOption.of(it.name, it.name) })

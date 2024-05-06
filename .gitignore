@@ -6,3 +6,6 @@
 /Database.lock.db
 /session_data.db
 /src/main/resources/application-local.yml
+/Database_new.lock.db
+/Database_new.mv.db
+/Database_new.trace.db

@@ -16,8 +16,8 @@ class AccountTypeEntity(
     @GeneratedValue(strategy = IDENTITY)
     val id: Long,
     @ManyToOne
-    @JoinColumn(name = "BANK_ID", nullable = false)
-    val bank: BankEntity,
+    @JoinColumn(name = "BANK_ID", nullable = true)
+    val bank: BankEntity?,
     @Column(nullable = false)
     var name: String,
     @Column(nullable = false)

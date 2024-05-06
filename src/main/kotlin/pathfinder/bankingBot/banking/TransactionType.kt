@@ -3,7 +3,7 @@ package pathfinder.bankingBot.banking
 import jakarta.persistence.AttributeConverter
 
 enum class TransactionType {
-    RECEIVE, DEPOSIT, INTEREST;
+    RECEIVE, DEPOSIT, INTEREST, EARN;
 
     class Converter: AttributeConverter<Set<TransactionType>, String> {
         override fun convertToDatabaseColumn(attribute: Set<TransactionType>) =

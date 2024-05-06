@@ -3,17 +3,17 @@ package pathfinder.bankingBot.banking
 import java.time.DayOfWeek.MONDAY
 import java.time.OffsetDateTime
 
-enum class Frequency {
-    NEVER {
+enum class Frequency(val singular: String) {
+    NEVER("never") {
         override fun matches(offsetDateTime: OffsetDateTime) = false
     },
-    DAILY {
+    DAILY("day") {
         override fun matches(offsetDateTime: OffsetDateTime) = true
     },
-    WEEKLY {
+    WEEKLY("week") {
         override fun matches(offsetDateTime: OffsetDateTime) = offsetDateTime.dayOfWeek == MONDAY
     },
-    MONTHLY {
+    MONTHLY("month") {
         override fun matches(offsetDateTime: OffsetDateTime) = offsetDateTime.dayOfMonth == 1
     };
 

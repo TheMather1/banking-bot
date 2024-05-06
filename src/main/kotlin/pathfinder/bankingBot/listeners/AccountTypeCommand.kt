@@ -17,9 +17,9 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl
 import org.springframework.stereotype.Service
+import pathfinder.bankingBot.banking.Frequency
 import pathfinder.bankingBot.banking.jpa.AccountEntityRepository
 import pathfinder.bankingBot.banking.jpa.AccountTypeEntity
-import pathfinder.bankingBot.banking.Frequency
 import pathfinder.bankingBot.service.BankService
 import pathfinder.diceSyntax.DiceParser
 import pathfinder.diceSyntax.components.DiceParseException
@@ -30,9 +30,9 @@ import kotlin.concurrent.thread
 class AccountTypeCommand(
     private val bankService: BankService,
     private val accountEntityRepository: AccountEntityRepository,
+    private val diceParser: DiceParser,
     eventWaiter: EventWaiter
 ) : SlashCommandInterface(eventWaiter, "account_types", "View and modify account types.") {
-    private val diceParser = DiceParser()
 
 
 
@@ -121,7 +121,7 @@ class AccountTypeCommand(
     private fun accountTypeMenu(message: Message, id: Long, accountTypeEntity: AccountTypeEntity, user: User, selectedFrequency: Frequency) {
         val count = accountEntityRepository.countByAccountType(accountTypeEntity)
         val frequencySelectMenu = frequencySelector(id, selectedFrequency)
-        val accountTypeEditButton = accountTypeEditButton(id)
+        val accountTypeEditButton = accountTypeEditButton(id, accountTypeEntity.interestRate)
         val accountTypeSaveButton = accountTypeSaveButton(id, selectedFrequency == accountTypeEntity.frequency)
         val accountTypeDeleteButton = accountTypeDeleteButton(id, count > 0)
         val cancelButton = cancelButton(id)
@@ -190,7 +190,7 @@ class AccountTypeCommand(
         private fun accountTypeAddButton(triggerId: Long) = ButtonImpl("add_account_type_$triggerId", "Add account type", ButtonStyle.SUCCESS, false, null)
         private fun accountTypeBrowseButton(triggerId: Long) = ButtonImpl("browse_account_types_$triggerId", "Browse account types",
             ButtonStyle.PRIMARY, false, null)
-        private fun accountTypeEditButton(triggerId: Long) = ButtonImpl("edit_account_type_$triggerId", "Edit interest",
+        private fun accountTypeEditButton(triggerId: Long, interest: String) = ButtonImpl("edit_account_type_$triggerId", "Interest:\n$interest%",
             ButtonStyle.PRIMARY, false, null)
         private fun accountTypeSaveButton(triggerId: Long, disabled: Boolean) = ButtonImpl("save_account_type_$triggerId", "Save changes",
             ButtonStyle.PRIMARY, disabled, null)

@@ -30,7 +30,7 @@ Permission to use commands will need to be granted under APPS > Integrations in 
 * **Send money** *(context command)* - Send money from your own accounts to another player.
 * **npc_send** *(slash command)* - Send money from your own accounts to an NPC.
 * **bank** *(slash command)* - View your accounts and deposit or withdraw money from them.
-* **downtime** *(slash command)* - 
+* **downtime** *(slash command)* - Earn money by spending time working.
 
 #### Glossary
 context command - Commands performed by right-clicking server members, under Apps

@@ -63,7 +63,7 @@ class CharacterSupport(
         }
     }
 
-    fun characterPaginator(characters: List<CharacterEntity>, hook: InteractionHook, user: User) {
+    fun characterPaginator(characters: List<CharacterEntity>, hook: InteractionHook, user: User, selectFunction: (Message, CharacterEntity, User) -> Unit) {
         lateinit var character: CharacterEntity
         ButtonEmbedPaginator.Builder().waitOnSinglePage(true)
             .setUsers(user)

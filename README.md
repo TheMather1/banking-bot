@@ -18,6 +18,7 @@ Permission to use commands will need to be granted under APPS > Integrations in 
 
 ### Management
 * **Manage Characters** *(context command)* - Add, delete, or edit player characters and their accounts.
+* **Modify downtime override** *(context command)* - Override configuration for downtime earnings for a specific character.
 * **npc_accounts** *(slash command)* - Add, delete, or edit non-player characters and their accounts.
 * **account_types** *(slash command)* - Add, delete, or edit account types and their interest rates for the server.
 * **downtime_config** *(slash command)* - Edit the server's default configuration for downtime earnings.

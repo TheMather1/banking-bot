@@ -36,7 +36,7 @@ class NPCModificationCommand(
                     .queue {
                         eventWaiter.waitForButton(characterAddButton, event.user) { characterSupport.addCharacter(it, null)}
                         eventWaiter.waitForButton(characterBrowseButton, event.user) { interaction ->
-                            interaction.deferEdit().queue { characterSupport.characterPaginator(characters, it, interaction.user) }
+                            interaction.deferEdit().queue { characterSupport.characterPaginator(characters, it, interaction.user, characterSupport::characterMenu) }
                         }
                         eventWaiter.waitForCancelButton(cancelButton, event.user)
                     }

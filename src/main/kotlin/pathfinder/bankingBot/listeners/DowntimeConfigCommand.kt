@@ -5,7 +5,8 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import org.springframework.stereotype.Service
 import pathfinder.bankingBot.listeners.input.DowntimeFields
-import pathfinder.bankingBot.service.BankService
+import pathfinder.bankingBot.banking.jpa.service.BankService
+import pathfinder.bankingBot.listeners.inheritance.SlashCommandInterface
 import pathfinder.bankingBot.service.support.DowntimeSupport
 
 @Service

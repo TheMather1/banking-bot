@@ -1,4 +1,4 @@
-package pathfinder.bankingBot.listeners
+package pathfinder.bankingBot.listeners.inheritance
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter
 import net.dv8tion.jda.api.entities.Message

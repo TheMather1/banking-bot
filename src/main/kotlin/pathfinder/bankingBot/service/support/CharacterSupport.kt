@@ -2,6 +2,7 @@ package pathfinder.bankingBot.service.support
 
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter
 import com.jagrosh.jdautilities.menu.ButtonEmbedPaginator
+import jakarta.transaction.Transactional
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
@@ -13,13 +14,18 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.api.utils.messages.MessageEditBuilder
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl
 import org.springframework.stereotype.Service
-import pathfinder.bankingBot.banking.jpa.*
+import pathfinder.bankingBot.banking.jpa.AccountEntity
+import pathfinder.bankingBot.banking.jpa.CharacterEntity
+import pathfinder.bankingBot.banking.jpa.repository.AccountEntityRepository
+import pathfinder.bankingBot.banking.jpa.repository.AccountTypeRepository
+import pathfinder.bankingBot.banking.jpa.repository.CharacterRepository
+import pathfinder.bankingBot.banking.jpa.service.BankService
+import pathfinder.bankingBot.delim
 import pathfinder.bankingBot.editActionComponents
-import pathfinder.bankingBot.listeners.InteractionTemplate
+import pathfinder.bankingBot.listeners.inheritance.InteractionTemplate
 import pathfinder.bankingBot.listeners.input.AccountTypeField
 import pathfinder.bankingBot.listeners.input.DowntimeFields
 import pathfinder.bankingBot.prepend
-import pathfinder.bankingBot.service.BankService
 import java.util.concurrent.TimeUnit.MINUTES
 import kotlin.concurrent.thread
 
@@ -30,9 +36,10 @@ class CharacterSupport(
     private val accountTypeRepository: AccountTypeRepository,
     private val accountEntityRepository: AccountEntityRepository,
     private val downtimeSupport: DowntimeSupport,
-    private val bankService: BankService
+    private val bankService: BankService,
 ) : InteractionTemplate {
 
+    @Transactional
     fun characterMenu(message: Message, character: CharacterEntity, user: User) {
         val accountAddButton = accountAddButton(message.idLong)
         val accountBrowseButton = accountBrowseButton(message.idLong)
@@ -53,23 +60,28 @@ class CharacterSupport(
     }
 
     private fun accountMenu(message: Message, account: AccountEntity, user: User) {
+        val accountDepositButton = accountDepositButton(message.idLong)
         val accountEditButton = accountEditButton(message.idLong, account.balance)
+        val accountWithdrawButton = accountWithdrawButton(message.idLong)
         val accountDeleteButton = accountDeleteButton(message.idLong, account.accountType.bank == null)
         val cancelButton = cancelButton(message.idLong)
         message.editActionComponents(accountEditButton, accountDeleteButton, cancelButton).setContent(null).queue {
+            eventWaiter.waitForButton(accountDepositButton, user) { deposit(it, account)}
             eventWaiter.waitForButton(accountEditButton, user) { editAccount(it, account) }
+            eventWaiter.waitForButton(accountWithdrawButton, user) { withdraw(it, account) }
             eventWaiter.waitForButton(accountDeleteButton, user) { deleteAccount(it, account) }
             eventWaiter.waitForCancelButton(cancelButton, user)
         }
     }
 
+    @Transactional
     fun characterPaginator(characters: List<CharacterEntity>, hook: InteractionHook, user: User, selectFunction: (Message, CharacterEntity, User) -> Unit) {
         lateinit var character: CharacterEntity
         ButtonEmbedPaginator.Builder().waitOnSinglePage(true)
             .setUsers(user)
             .setFinalAction { message ->
                 if (message.hasTimedOut()) message.delete().queue()
-                else characterMenu(message, character, user)
+                else selectFunction(message, character, user)
             }
             .setEventWaiter(eventWaiter)
             .setTimeout(5, MINUTES)
@@ -110,8 +122,7 @@ class CharacterSupport(
             e.deferReply().queue { hook ->
                 val reason = e.interaction.getValue(reasonField.id)?.asString?.takeUnless(String::isBlank)
                     ?.prepend(" Reason: ") ?: ""
-                characterRepository.delete(character)
-                characterRepository.flush()
+                bankService.deleteCharacter(character)
                 hook.editOriginal("$character deleted!$reason").setComponents().setEmbeds().queue()
             }
         }
@@ -123,9 +134,7 @@ class CharacterSupport(
         eventWaiter.waitForModal(modal, event) { e ->
             e.deferEdit().queue { hook ->
                 val reason = e.interaction.getValue(reasonField.id)?.asString
-                val character = account.character
-                character.accounts.remove(account)
-                characterRepository.saveAndFlush(character)
+                bankService.deleteAccount(account)
                 hook.editOriginal("${account.fullName()} deleted!".let {
                     if (reason != null) "$it\nReason: $reason"
                     else it
@@ -179,6 +188,29 @@ class CharacterSupport(
         }
     }
 
+    private fun deposit(event: ButtonInteractionEvent, account: AccountEntity) {
+        val modal = accountDepositModal(event.idLong)
+        event.replyModal(modal).queue()
+        eventWaiter.waitForModal(modal, event) { e ->
+            e.deferEdit().queue {
+                val value = e.interaction.getValue(goldField.id)!!.asString
+                try {
+                    val num = value.toDouble()
+                    if (num > 0) {
+                        account.deposit(num, e.user)
+                        characterRepository.saveAndFlush(account.character)
+                        it.editOriginal("$num deposited to ${account.fullName()}.").setComponents().setEmbeds()
+                            .queue()
+                    } else {
+                        it.editOriginal("Deposit value must be a positive number.")
+                    }
+                } catch (_: NumberFormatException) {
+                    it.editOriginal("$value is not a valid number.").queue()
+                }
+            }
+        }
+    }
+
     private fun editAccount(event: ButtonInteractionEvent, account: AccountEntity) {
         val modal = accountEditModal(event.idLong)
         event.replyModal(modal).queue()
@@ -197,6 +229,29 @@ class CharacterSupport(
         }
     }
 
+    private fun withdraw(event: ButtonInteractionEvent, account: AccountEntity) {
+        val modal = accountWithdrawModal(event.idLong)
+        event.replyModal(modal).queue()
+        eventWaiter.waitForModal(modal, event) { e ->
+            e.deferEdit().queue {
+                val value = e.interaction.getValue(goldField.id)!!.asString
+                try {
+                    val num = value.toDouble()
+                    if (num > 0) {
+                        account.withdraw(num, e.user)
+                        characterRepository.saveAndFlush(account.character)
+                        it.editOriginal("$num withdrawn from ${account.fullName()}.").setComponents().setEmbeds()
+                            .queue()
+                    } else {
+                        it.editOriginal("Withdraw value must be a positive number.")
+                    }
+                } catch (_: NumberFormatException) {
+                    it.editOriginal("$value is not a valid number.").queue()
+                }
+            }
+        }
+    }
+
     private fun saveDowntime(event: ButtonInteractionEvent, character: CharacterEntity, downtimeFields: DowntimeFields) {
         event.deferEdit().queue {
             val characterEntity = characterRepository.getReferenceById(character.id)
@@ -208,22 +263,28 @@ class CharacterSupport(
 
     companion object {
         private val characterNameField =
-            TextInput.create("character_name", "Name", SHORT).setPlaceholder("John Doe").setRequired(true).build()
+            TextInput.create("character_name", "Name", SHORT).setMaxLength(25).setPlaceholder("John Doe").setRequired(true).build()
         private val goldField = TextInput.create("gold", "Enter value:", SHORT).setPlaceholder("0.00").setRequired(true).build()
         private val reasonField = TextInput.create("delete_reason", "Reason", SHORT).setRequired(false).build()
         private fun characterDeleteButton(triggerId: Long) = ButtonImpl("delete_character_$triggerId", "Delete character", DANGER, false, null)
         private fun accountAddButton(triggerId: Long) = ButtonImpl("add_account_$triggerId", "Add account", SUCCESS, false, null)
         private fun accountBrowseButton(triggerId: Long) = ButtonImpl("browse_account_$triggerId", "Browse accounts", SECONDARY, false, null)
+        private fun accountDepositButton(triggerId: Long) = ButtonImpl("deposit_account_$triggerId", "Deposit", SUCCESS, false, null)
         private fun accountEditButton(triggerId: Long, balance: Double) = ButtonImpl("edit_account_$triggerId", "Balance:\n$balance gp", PRIMARY, false, null)
+        private fun accountWithdrawButton(triggerId: Long) = ButtonImpl("withdraw_account_$triggerId", "Withdraw", DANGER, false, null)
         private fun accountDeleteButton(triggerId: Long, disabled: Boolean) = ButtonImpl("delete_account_$triggerId", "Delete account", DANGER, disabled, null)
         private fun downtimeEditButton(triggerId: Long) = ButtonImpl("edit_downtime_$triggerId", "Edit downtime", PRIMARY, false, null)
         private fun characterAddModal(triggerId: Long) =
             Modal.create("deposit_${triggerId}", "Add character").addActionRow(characterNameField).build()
         private fun accountEditModal(triggerId: Long) =
-            Modal.create("deposit_${triggerId}", "Edit balance").addActionRow(goldField).build()
+            Modal.create("edit_${triggerId}", "Edit balance").addActionRow(goldField).build()
+        private fun accountDepositModal(triggerId: Long) =
+            Modal.create("deposit_${triggerId}", "Deposit").addActionRow(goldField).build()
+        private fun accountWithdrawModal(triggerId: Long) =
+            Modal.create("withdraw_${triggerId}", "Withdraw").addActionRow(goldField).build()
 
         private fun deleteCharacterModal(character: CharacterEntity, triggerId: Long) =
-            Modal.create("delete_$triggerId", "Delete $character?").addActionRow(reasonField).build()
-        private fun deleteAccountModal(account: AccountEntity, triggerId: Long) = Modal.create("delete_$triggerId", "Delete $account account of ${account.character}").addActionRow(reasonField).build()
+            Modal.create("delete_$triggerId", "Delete ${character.name.delim(35)}?").addActionRow(reasonField).build()
+        private fun deleteAccountModal(account: AccountEntity, triggerId: Long) = Modal.create("delete_$triggerId", "Delete $account account of ${account.character}".delim()).addActionRow(reasonField).build()
     }
 }

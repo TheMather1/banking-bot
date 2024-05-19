@@ -16,8 +16,9 @@ import net.dv8tion.jda.internal.interactions.component.ButtonImpl
 import org.springframework.stereotype.Service
 import pathfinder.bankingBot.banking.jpa.AccountEntity
 import pathfinder.bankingBot.banking.jpa.CharacterEntity
-import pathfinder.bankingBot.banking.jpa.CharacterRepository
+import pathfinder.bankingBot.banking.jpa.repository.CharacterRepository
 import pathfinder.bankingBot.editActionComponents
+import pathfinder.bankingBot.listeners.inheritance.SlashCommandInterface
 import java.util.concurrent.TimeUnit.MINUTES
 
 @Service

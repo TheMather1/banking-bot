@@ -18,9 +18,10 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl
 import org.springframework.stereotype.Service
 import pathfinder.bankingBot.banking.Frequency
-import pathfinder.bankingBot.banking.jpa.AccountEntityRepository
 import pathfinder.bankingBot.banking.jpa.AccountTypeEntity
-import pathfinder.bankingBot.service.BankService
+import pathfinder.bankingBot.banking.jpa.repository.AccountEntityRepository
+import pathfinder.bankingBot.banking.jpa.service.BankService
+import pathfinder.bankingBot.listeners.inheritance.SlashCommandInterface
 import pathfinder.diceSyntax.DiceParser
 import pathfinder.diceSyntax.components.DiceParseException
 import java.util.concurrent.TimeUnit
@@ -178,12 +179,9 @@ class AccountTypeCommand(
 
     private fun deleteAccountType(event: ButtonInteractionEvent, accountType: AccountTypeEntity) {
         event.deferEdit().queue { hook ->
-            val bank = bankService.getBank(event.guild!!)
-            bank.accountTypes.removeIf { it.id == accountType.id }
-            bankService.persist(bank)
+            bankService.deleteAccountType(accountType)
             hook.editOriginal("Account type $accountType deleted.").setEmbeds().setComponents().queue()
         }
-
     }
 
     companion object {
@@ -202,10 +200,10 @@ class AccountTypeCommand(
             .addOptions(Frequency.entries.map { SelectOption.of(it.name, it.name) }).setDefaultValues(default.name).build()
 
         private fun nameField(default: String? = null) =
-            TextInput.create("name", "Name", TextInputStyle.SHORT).setPlaceholder("Name").setRequired(true).setValue(default).build()
+            TextInput.create("name", "Name", TextInputStyle.SHORT).setMaxLength(20).setPlaceholder("Name").setRequired(true).setValue(default).build()
         private fun diceField(default: String? = null) =
             TextInput.create("dice", "Interest (%)", TextInputStyle.SHORT).setPlaceholder("1d20+1").setRequired(true).setValue(default).build()
-        private fun accountTypeModal(triggerId: Long, defaultName: String? = null, defaultDice: String? = null) = Modal.create("account_type_$triggerId", "Account Type:")
+        private fun accountTypeModal(triggerId: Long, defaultName: String? = null, defaultDice: String? = null) = Modal.create("account_type_$triggerId", "Account Type")
             .addActionRow(nameField(defaultName))
             .addActionRow(diceField(defaultDice)).build()
     }

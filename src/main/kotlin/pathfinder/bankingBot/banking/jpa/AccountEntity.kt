@@ -1,10 +1,11 @@
 package pathfinder.bankingBot.banking.jpa
 
 import jakarta.persistence.*
-import jakarta.persistence.CascadeType.ALL
+import jakarta.persistence.CascadeType.DETACH
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.User
 import pathfinder.bankingBot.banking.Denomination
+import pathfinder.bankingBot.banking.Paginatable
 import pathfinder.bankingBot.banking.TransactionType
 import pathfinder.bankingBot.banking.TransactionType.*
 import pathfinder.bankingBot.truncateToCopper
@@ -17,11 +18,11 @@ class AccountEntity(
     val id: Long = 0,
     @ManyToOne
     @JoinColumn(name = "CHARACTER_ID", nullable = false)
-    val character: CharacterEntity,
+    var character: CharacterEntity,
     @ManyToOne
     @JoinColumn(name = "ACCOUNT_TYPE_ID", nullable = false)
     val accountType: AccountTypeEntity,
-    @OneToMany(targetEntity = LogEntity::class, mappedBy = "account", fetch = FetchType.EAGER, cascade = [ALL])
+    @OneToMany(mappedBy = "account", fetch = FetchType.EAGER, cascade = [DETACH])
     val logs: MutableList<LogEntity> = mutableListOf(),
     @Column(nullable = false)
     var balance: Double = 0.0

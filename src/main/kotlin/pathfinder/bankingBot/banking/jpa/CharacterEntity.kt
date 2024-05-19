@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import jakarta.persistence.CascadeType.ALL
 import jakarta.persistence.FetchType.EAGER
 import net.dv8tion.jda.api.EmbedBuilder
+import pathfinder.bankingBot.banking.Paginatable
 
 @Entity
 @Table(name = "CHARACTERS")
@@ -18,10 +19,10 @@ class CharacterEntity(
     val playerId: Long?,
     @Column(nullable = false)
     val name: String,
-    @OneToMany(fetch = EAGER, cascade = [ALL], mappedBy = "character")
-    val accounts: MutableList<AccountEntity> = mutableListOf(),
+    @OneToMany(fetch = EAGER, cascade = [ALL], mappedBy = "character", orphanRemoval = true)
+    val accounts: MutableList<AccountEntity> = mutableListOf()
 ) : Paginatable {
-    @OneToOne(fetch = EAGER, cascade = [ALL], mappedBy = "character")
+    @OneToOne(fetch = EAGER, cascade = [ALL], mappedBy = "character", orphanRemoval = true)
     val downtimeOverride: DowntimeOverride = DowntimeOverride(0, this)
 
     override fun asEmbed() = EmbedBuilder().setTitle(name).apply {

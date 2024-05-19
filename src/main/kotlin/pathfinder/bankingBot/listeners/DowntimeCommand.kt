@@ -13,9 +13,10 @@ import net.dv8tion.jda.api.interactions.components.text.TextInputStyle.SHORT
 import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl
 import org.springframework.stereotype.Service
-import pathfinder.bankingBot.banking.jpa.AccountEntityRepository
 import pathfinder.bankingBot.banking.jpa.CharacterEntity
-import pathfinder.bankingBot.banking.jpa.CharacterRepository
+import pathfinder.bankingBot.banking.jpa.repository.AccountEntityRepository
+import pathfinder.bankingBot.banking.jpa.repository.CharacterRepository
+import pathfinder.bankingBot.listeners.inheritance.SlashCommandInterface
 import pathfinder.bankingBot.truncateToCopper
 import pathfinder.diceSyntax.DiceParser
 import pathfinder.diceSyntax.components.DiceParseException
@@ -35,7 +36,9 @@ class DowntimeCommand(
     override fun execute(event: SlashCommandEvent) {
         event.deferReply().queue { hook ->
             val characters = characterRepository.getByBank_IdAndPlayerId(event.guild!!.idLong, event.user.idLong)
-            selectCharacter(characters, characters.first(), hook)
+            if (characters.isEmpty())
+                hook.editOriginal("You do not have any characters.").queue()
+            else selectCharacter(characters, characters.first(), hook)
         }
     }
 
@@ -45,10 +48,10 @@ class DowntimeCommand(
         val cancelButton = cancelButton(hook.idLong)
         hook.editOriginalComponents(ActionRow.of(characterField), ActionRow.of(selectButton, cancelButton)).queue()
         eventWaiter.waitForSelection(characterField, hook.interaction.user) { event ->
-            event.deferEdit().queue {
+            event.deferEdit().queue { hook ->
                 val selectedCharacterId = event.selectedOptions.first().value.toLong()
                 val selectedCharacter = characters.first { it.id == selectedCharacterId }
-                selectCharacter(characters, selectedCharacter, it)
+                selectCharacter(characters, selectedCharacter, hook)
             }
         }
         eventWaiter.waitForButton(selectButton, hook.interaction.user) { buttonInteractionEvent ->

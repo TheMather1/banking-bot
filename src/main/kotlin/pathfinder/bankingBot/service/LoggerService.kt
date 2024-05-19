@@ -7,19 +7,19 @@ import org.springframework.stereotype.Service
 import pathfinder.bankingBot.banking.jpa.LogEntity
 
 @Service
-class LogService {
+class LoggerService {
     @Autowired
     fun setJDA(jda: JDA) {
-        LogService.jda = jda
+        LoggerService.jda = jda
     }
 
     @PostPersist
     private fun log(logEntity: LogEntity) {
-        val bank = logEntity.account.character.bank
+        val bank = logEntity.account!!.character.bank
         val guild = jda.getGuildById(bank.id)!!
         if (bank.logChannel != null) {
             val channel = guild.getTextChannelById(bank.logChannel!!)
-            channel?.sendMessage("${logEntity.account.fullName()} - ${logEntity.description}\nCurrent balance: ${logEntity.balance}")?.queue()
+            channel?.sendMessage("${logEntity.account!!.fullName()} - ${logEntity.description}\nCurrent balance: ${logEntity.balance}")?.queue()
         }
     }
 

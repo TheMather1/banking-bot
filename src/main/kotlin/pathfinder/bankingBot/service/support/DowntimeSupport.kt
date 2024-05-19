@@ -20,7 +20,7 @@ import pathfinder.bankingBot.banking.Denomination
 import pathfinder.bankingBot.banking.Denomination.GP
 import pathfinder.bankingBot.banking.Frequency
 import pathfinder.bankingBot.banking.Frequency.WEEKLY
-import pathfinder.bankingBot.listeners.InteractionTemplate
+import pathfinder.bankingBot.listeners.inheritance.InteractionTemplate
 import pathfinder.bankingBot.listeners.input.DowntimeFields
 import pathfinder.diceSyntax.DiceParser
 import pathfinder.diceSyntax.components.DiceParseException
@@ -145,11 +145,11 @@ class DowntimeSupport(val eventWaiter: EventWaiter, val diceParser: DiceParser):
 
         private fun multiplierField(default: Double?) =
             TextInput.create("multiplier", "Multiplier", TextInputStyle.SHORT).setPlaceholder("0.5").setRequired(false).setValue(default?.toString()).build()
-        private fun multiplierModal(triggerId: Long, default: Double?) = Modal.create("multiplier_$triggerId", "Downtime multiplier:")
+        private fun multiplierModal(triggerId: Long, default: Double?) = Modal.create("multiplier_$triggerId", "Downtime multiplier")
             .addActionRow(multiplierField(default)).build()
         private fun baseDiceField(default: String?) =
             TextInput.create("baseDice", "Base dice", TextInputStyle.SHORT).setPlaceholder("1d20").setRequired(false).setValue(default).build()
-        private fun baseDiceModal(triggerId: Long, default: String?) = Modal.create("base_dice_$triggerId", "Downtime dice:")
+        private fun baseDiceModal(triggerId: Long, default: String?) = Modal.create("base_dice_$triggerId", "Downtime dice")
             .addActionRow(baseDiceField(default)).build()
     }
 }

@@ -10,7 +10,8 @@ import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SUCCESS
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl
 import org.springframework.stereotype.Service
 import pathfinder.bankingBot.banking.jpa.CharacterEntity
-import pathfinder.bankingBot.banking.jpa.CharacterRepository
+import pathfinder.bankingBot.banking.jpa.repository.CharacterRepository
+import pathfinder.bankingBot.listeners.inheritance.InteractionTemplate
 import pathfinder.bankingBot.service.support.CharacterSupport
 
 @Service

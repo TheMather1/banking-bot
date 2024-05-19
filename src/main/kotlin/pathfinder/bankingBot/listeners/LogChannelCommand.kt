@@ -5,7 +5,8 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import org.springframework.stereotype.Service
-import pathfinder.bankingBot.service.BankService
+import pathfinder.bankingBot.banking.jpa.service.BankService
+import pathfinder.bankingBot.listeners.inheritance.SlashCommandInterface
 
 @Service
 class LogChannelCommand(

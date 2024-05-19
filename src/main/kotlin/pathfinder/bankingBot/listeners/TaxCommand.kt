@@ -20,8 +20,14 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.internal.interactions.component.ButtonImpl
 import org.springframework.stereotype.Service
 import pathfinder.bankingBot.banking.TransactionType
-import pathfinder.bankingBot.banking.jpa.*
-import pathfinder.bankingBot.service.BankService
+import pathfinder.bankingBot.banking.jpa.AccountEntity
+import pathfinder.bankingBot.banking.jpa.AccountTypeEntity
+import pathfinder.bankingBot.banking.jpa.CharacterEntity
+import pathfinder.bankingBot.banking.jpa.TaxConfig
+import pathfinder.bankingBot.banking.jpa.repository.CharacterRepository
+import pathfinder.bankingBot.banking.jpa.repository.TaxRepository
+import pathfinder.bankingBot.banking.jpa.service.BankService
+import pathfinder.bankingBot.listeners.inheritance.SlashCommandInterface
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
@@ -292,7 +298,7 @@ class TaxCommand(
 
         private fun percentageField(default: Int? = null) =
             TextInput.create("percentage", "Tax (%)", TextInputStyle.SHORT).setPlaceholder("0%").setRequired(true).setValue(default.toString()).build()
-        private fun percentageModal(triggerId: Long, defaultPercentage: Int? = null) = Modal.create("account_type_$triggerId", "Account Type:")
+        private fun percentageModal(triggerId: Long, defaultPercentage: Int? = null) = Modal.create("account_type_$triggerId", "Account Type")
             .addActionRow(percentageField(defaultPercentage)).build()
     }
 }

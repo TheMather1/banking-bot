@@ -1,4 +1,4 @@
-package pathfinder.bankingBot.banking.jpa
+package pathfinder.bankingBot.banking
 
 import net.dv8tion.jda.api.entities.MessageEmbed
 

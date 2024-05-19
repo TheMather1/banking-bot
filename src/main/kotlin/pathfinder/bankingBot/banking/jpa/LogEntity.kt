@@ -1,19 +1,19 @@
 package pathfinder.bankingBot.banking.jpa
 
 import jakarta.persistence.*
-import pathfinder.bankingBot.service.LogService
+import pathfinder.bankingBot.service.LoggerService
 import java.time.OffsetDateTime
 
 @Entity
-@EntityListeners(LogService::class)
+@EntityListeners(LoggerService::class)
 @Table(name = "LOGS")
 class LogEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
-    @ManyToOne(targetEntity = AccountEntity::class)
-    @JoinColumn(name = "ACCOUNT_ID", nullable = false)
-    val account: AccountEntity,
+    @ManyToOne
+    @JoinColumn(name = "ACCOUNT_ID", nullable = true)
+    var account: AccountEntity?,
     @Column(nullable = false)
     val description: String,
     @Column(nullable = false)

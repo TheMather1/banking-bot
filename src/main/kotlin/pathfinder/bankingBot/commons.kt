@@ -11,4 +11,6 @@ fun Message.editActionComponents(vararg components: ItemComponent) = editMessage
 
 fun String.prepend(other: String) = other + this
 
+fun String.delim(maxLength: Int = 45) = if (length > maxLength) substring(0, maxLength-3) + "..." else this
+
 fun truncateToCopper(value: Double, denomination: Denomination = GP): Double = floor(value * denomination(100.0)) / denomination(100.0)

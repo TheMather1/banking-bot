@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Configuration
 import pathfinder.bankingBot.banking.Frequency.NEVER
 import pathfinder.bankingBot.banking.jpa.AccountEntity
 import pathfinder.bankingBot.banking.jpa.AccountTypeEntity
-import pathfinder.bankingBot.banking.jpa.AccountTypeRepository
-import pathfinder.bankingBot.banking.jpa.CharacterRepository
+import pathfinder.bankingBot.banking.jpa.repository.AccountTypeRepository
+import pathfinder.bankingBot.banking.jpa.repository.CharacterRepository
 import pathfinder.diceSyntax.DiceParser
 
 @Configuration

@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 //@ConfigurationProperties("pathfinder.banking.bot")
 class BotConfig(
-    @Value("pathfinder.banking.bot.token")
+    @Value("\${pathfinder.banking.bot.token}")
     val token: String
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)

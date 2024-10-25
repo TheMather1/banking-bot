@@ -17,16 +17,9 @@ java {
 
 repositories {
     mavenCentral()
-//    maven { url = uri("https://m2.chew.pro/snapshots") }
+    maven { url = uri("https://m2.chew.pro/snapshots") }
     maven {
         url = uri("https://maven.pkg.github.com/TheMather1/dice-syntax")
-        credentials {
-            username = "token"
-            password = System.getenv("GITHUB_TOKEN")
-        }
-    }
-    maven {
-        url = uri("https://maven.pkg.github.com/TheMather1/JDA-Chewtils")
         credentials {
             username = "token"
             password = System.getenv("GITHUB_TOKEN")
@@ -38,11 +31,10 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
     implementation("com.h2database", "h2", "2.2.224")
-    implementation("pw.chew", "jda-chewtils", "2.2" /*0-SNAPSHOT"*/)
+    implementation("pw.chew", "jda-chewtils", "2.0")
     implementation("javax.servlet", "jstl", "1.2")
     implementation("net.dv8tion", "JDA", "5.0.0-beta.23")
     implementation("no.mather.ttrpg", "dice-syntax", "0.1.2")
-//    implementation("org.mapdb", "mapdb", "3.0.8")
     implementation("org.springframework.boot", "spring-boot-starter-data-jpa")
 //    implementation("org.springframework.boot", "spring-boot-starter-oauth2-client")
 //    implementation("org.springframework.boot", "spring-boot-starter-web")

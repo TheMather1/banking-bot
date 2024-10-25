@@ -3,5 +3,17 @@ spring:
     hibernate:
       ddl-auto: update
     open-in-view: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - metrics
+  endpoint:
+    metrics:
+      enabled: true
+    health:
+      enabled: true
 server:
   port: ${PORT:8080}

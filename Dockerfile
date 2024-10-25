@@ -1,6 +1,8 @@
 FROM gradle:jdk21 AS BUILD
+ARG GITHUB_TOKEN
 WORKDIR /usr/app/
 COPY . .
+ENV GITHUB_TOKEN=$GITHUB_TOKEN
 RUN gradle build
 
 FROM eclipse-temurin:21

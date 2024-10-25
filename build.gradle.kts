@@ -17,7 +17,7 @@ java {
 
 repositories {
     mavenCentral()
-    maven { url = uri("https://m2.chew.pro/snapshots") }
+    maven { url = uri("https://m2.chew.pro/releases") }
     maven {
         url = uri("https://maven.pkg.github.com/TheMather1/dice-syntax")
         credentials {

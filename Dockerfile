@@ -1,7 +1,7 @@
 FROM gradle:jdk21 AS BUILD
 WORKDIR /usr/app/
 COPY . .
-RUN gradlew build
+RUN gradle build
 
 FROM eclipse-temurin:21
 VOLUME /tmp

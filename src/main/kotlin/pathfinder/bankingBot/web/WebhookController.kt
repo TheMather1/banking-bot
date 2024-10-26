@@ -4,13 +4,15 @@ package pathfinder.bankingBot.web
 import com.iwebpp.crypto.TweetNaclFast
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import pathfinder.bankingBot.web.domain.Webhook
 
-@Controller("/api/webhook")
+@RestController
+@RequestMapping("/api/webhook")
 class WebhookController {
 
     val publicKey = "18439c59d508a67fc45e6a0409c37143cef84b30467851e331a32153c79f531a".toByteArray()

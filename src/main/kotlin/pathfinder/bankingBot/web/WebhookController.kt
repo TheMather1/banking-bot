@@ -13,8 +13,8 @@ import pathfinder.bankingBot.web.domain.Webhook
 @Controller("/api/webhook")
 class WebhookController {
 
-    val publicKey = "".toByteArray()
-    val nacl = TweetNaclFast.Signature(ByteArray(0), publicKey)
+    val publicKey = "18439c59d508a67fc45e6a0409c37143cef84b30467851e331a32153c79f531a".toByteArray()
+    val nacl = TweetNaclFast.Signature(publicKey, ByteArray(0))
 
     @PostMapping
     fun webhook(

@@ -7,8 +7,8 @@ import com.fasterxml.jackson.annotation.JsonFormat.Shape.NUMBER
 data class Webhook(
     val version: Int,
     @JsonAlias("application_id")
-    val applicationId: String,
+    val applicationId: String?,
     @JsonFormat(shape = NUMBER)
     val type: Boolean,
-    val event: Event? = null
+    val event: Event?
 )

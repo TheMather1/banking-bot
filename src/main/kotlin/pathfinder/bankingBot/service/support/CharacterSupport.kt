@@ -165,9 +165,7 @@ class CharacterSupport(
     }
 
     private fun addAccount(event: ButtonInteractionEvent, character: CharacterEntity) {
-        val accountTypes = bankService.getBank(event.guild!!).accountTypes.filter {  type ->
-            character.accounts.none { it.accountType.id == type.id }
-        }
+        val accountTypes = bankService.getBank(event.guild!!).accountTypes.filterNot(character::hasAccount)
         if (accountTypes.isEmpty()) event.editMessage("No available account types.").queue()
         else {
             val accountTypeField = AccountTypeField(event.id, accountTypes)

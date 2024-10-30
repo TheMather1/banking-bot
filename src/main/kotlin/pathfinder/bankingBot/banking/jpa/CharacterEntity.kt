@@ -3,6 +3,7 @@ package pathfinder.bankingBot.banking.jpa
 import jakarta.persistence.*
 import jakarta.persistence.CascadeType.ALL
 import jakarta.persistence.FetchType.EAGER
+import net.dv8tion.jda.api.AccountType
 import net.dv8tion.jda.api.EmbedBuilder
 import pathfinder.bankingBot.banking.Paginatable
 
@@ -31,6 +32,12 @@ class CharacterEntity(
         }
         if (accounts.isEmpty()) setDescription("No accounts.")
     }.build()
+
+    fun getAccountById(id: Long) = accounts.firstOrNull { it.id == id }
+    fun getAccountById(id: String) = accounts.firstOrNull { it.id.toString() == id }
+
+    fun hasAccount(type: AccountTypeEntity) = accounts.any { it.accountType.id == type.id }
+    fun getAccountByType(type: AccountTypeEntity) = accounts.firstOrNull { it.accountType.id == type.id }
 
     override fun toString() = name
 }

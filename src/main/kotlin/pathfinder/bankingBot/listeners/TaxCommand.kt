@@ -204,7 +204,7 @@ class TaxCommand(
             }
             eventWaiter.waitForSelection(accountSelectMenu, user) { event ->
                 val targetId = event.values.first().toLong()
-                val targetAccount = recipient!!.accounts.first { it.id == targetId }
+                val targetAccount = recipient!!.getAccountById(targetId)!!
                 configureTax(event, accountType, npcs, actions, recipient, targetAccount, percentage, subtract)
             }
             eventWaiter.waitForSelection(subtractSelectMenu, user) { event ->

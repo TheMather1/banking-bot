@@ -21,7 +21,8 @@ class BankConfig {
         val walletType = accountTypeRepository.findByBankNull()
             ?: accountTypeRepository.saveAndFlush(AccountTypeEntity(0, null, "Wallet", "0", NEVER))
 //        characterRepository.findAll().filter { it.accounts.none { it.accountType.id == walletType.id } }
-        val characters = characterRepository.findAllByAccounts_AccountTypeNot(walletType)
+        val characters = characterRepository.findAll()
+            .filterNot { it.hasAccount(walletType) }
             .onEach {
                 it.accounts.add(AccountEntity(0, it, walletType))
             }

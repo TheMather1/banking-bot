@@ -118,7 +118,7 @@ interface SendInterface: InteractionTemplate {
             }
             eventWaiter.waitForSelection(senderAccounts, user) { interaction ->
                 interaction.deferEdit().queue()
-                val newSenderAccount = sender!!.accounts.first { it.id.toString() == interaction.values.first() }
+                val newSenderAccount = sender!!.getAccountById(interaction.values.first())!!
                 handleInput(
                     interaction.id,
                     interaction.hook,
@@ -164,7 +164,7 @@ interface SendInterface: InteractionTemplate {
             }
             eventWaiter.waitForSelection(recipientAccounts, user) { interaction ->
                 interaction.deferEdit().queue()
-                val newRecipientAccount = recipient!!.accounts.first { it.id.toString() == interaction.values.first() }
+                val newRecipientAccount = recipient!!.getAccountById(interaction.values.first())!!
                 handleInput(
                     interaction.id,
                     interaction.hook,
@@ -202,9 +202,13 @@ interface SendInterface: InteractionTemplate {
                             gold > senderAccount.balance -> it.editOriginal("You cannot send more gold than you have.")
                             else -> {
                                 val taxAccount = recipientAccount.accountType.taxConfig?.targetAccount
+                                val senderCharacter = senderAccount.character
+                                val recipientAccount = senderCharacter.getAccountById(recipientAccount.id) ?: recipientAccount
+                                val recipientCharacter = recipientAccount.character.takeUnless { it.id == senderAccount.id }
+
                                 senderAccount.send(gold, recipientAccount)
                                 recipientAccount.receive(gold, senderAccount)
-                                characterRepository.saveAllAndFlush(listOfNotNull(senderAccount.character, recipientAccount.character, taxAccount?.character))
+                                characterRepository.saveAllAndFlush(listOfNotNull(senderCharacter, recipientCharacter, taxAccount?.character))
                                 modalEvent.channel.sendMessage("${senderAccount.fullName()} sent $gold to ${recipientAccount.fullName()}").queue()
                                 it.editOriginalComponents().setContent("Sent.")
                             }

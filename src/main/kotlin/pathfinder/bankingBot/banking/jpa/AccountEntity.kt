@@ -2,6 +2,9 @@ package pathfinder.bankingBot.banking.jpa
 
 import jakarta.persistence.*
 import jakarta.persistence.CascadeType.DETACH
+import jakarta.persistence.CascadeType.MERGE
+import jakarta.persistence.CascadeType.PERSIST
+import jakarta.persistence.CascadeType.REFRESH
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.User
 import pathfinder.bankingBot.banking.Denomination
@@ -22,9 +25,9 @@ class AccountEntity(
     @ManyToOne
     @JoinColumn(name = "ACCOUNT_TYPE_ID", nullable = false)
     val accountType: AccountTypeEntity,
-    @OneToMany(mappedBy = "account", fetch = FetchType.EAGER, cascade = [DETACH])
+    @OneToMany(mappedBy = "account", fetch = FetchType.EAGER, cascade = [PERSIST, MERGE, REFRESH, DETACH])
     val logs: MutableList<LogEntity> = mutableListOf(),
-    @Column(nullable = false)
+    @Column(nullable = false, scale = 2)
     var balance: Double = 0.0
 ) : Paginatable {
 

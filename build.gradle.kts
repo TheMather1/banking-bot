@@ -34,7 +34,7 @@ dependencies {
     implementation("pw.chew", "jda-chewtils", "2.0")
     implementation("javax.servlet", "jstl", "1.2")
     implementation("net.dv8tion", "JDA", "5.0.0-beta.23")
-    implementation("no.mather.ttrpg", "dice-syntax", "0.1.2")
+    implementation("no.mather.ttrpg", "dice-syntax", "0.2.0")
     implementation("org.postgresql", "postgresql", "42.6.0")
     implementation("org.springframework.boot", "spring-boot-starter-actuator")
     implementation("org.springframework.boot", "spring-boot-starter-data-jpa")

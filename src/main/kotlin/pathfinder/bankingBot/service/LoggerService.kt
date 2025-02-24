@@ -13,13 +13,15 @@ class LoggerService {
         LoggerService.jda = jda
     }
 
+    private val numberFormat = "%f.2"
+
     @PostPersist
     private fun log(logEntity: LogEntity) {
         val bank = logEntity.account!!.character.bank
         val guild = jda.getGuildById(bank.id)!!
         if (bank.logChannel != null) {
             val channel = guild.getTextChannelById(bank.logChannel!!)
-            channel?.sendMessage("${logEntity.account!!.fullName()} - ${logEntity.description}\nCurrent balance: ${logEntity.balance}")?.queue()
+            channel?.sendMessage("${logEntity.account!!.fullName()} - ${logEntity.description}\nCurrent balance: ${numberFormat.format(logEntity.balance)}")?.queue()
         }
     }
 

@@ -1,10 +1,7 @@
 package pathfinder.bankingBot.banking.jpa
 
 import jakarta.persistence.*
-import jakarta.persistence.CascadeType.DETACH
-import jakarta.persistence.CascadeType.MERGE
-import jakarta.persistence.CascadeType.PERSIST
-import jakarta.persistence.CascadeType.REFRESH
+import jakarta.persistence.CascadeType.*
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.User
 import pathfinder.bankingBot.banking.Denomination
@@ -31,6 +28,8 @@ class AccountEntity(
     var balance: Double = 0.0
 ) : Paginatable {
 
+    private val numberFormat = "%f.2"
+
     override fun toString() = "$accountType"
 
     fun fullName() = "$character - $accountType"
@@ -38,8 +37,8 @@ class AccountEntity(
     fun deposit(value: Double, actor: User? = null) {
         val tValue = tax(value, DEPOSIT)
         balance += tValue
-        if (actor == null) log("$character deposited $tValue GP.")
-        else  log("${actor.effectiveName} deposited $tValue GP.")
+        if (actor == null) log("$character deposited ${tValue.asString} GP.")
+        else  log("${actor.effectiveName} deposited ${tValue.asString} GP.")
     }
 
     fun earn(value: Double, denomination: Denomination, activity: String, roll: String) {
@@ -51,46 +50,49 @@ class AccountEntity(
     fun withdraw(value: Double, actor: User? = null) {
         val tValue = truncateToCopper(value)
         balance -= tValue
-        if (actor == null) log("$character withdrew $tValue GP.")
-        else  log("${actor.effectiveName} withdrew $tValue GP.")
+        if (actor == null) log("$character withdrew ${tValue.asString} GP.")
+        else  log("${actor.effectiveName} withdrew ${tValue.asString} GP.")
     }
 
     fun send(value: Double, recipient: AccountEntity) {
         val tValue = truncateToCopper(value)
         balance -= tValue
-        log("Sent $tValue GP to ${recipient.fullName()}.")
+        log("Sent ${tValue.asString} GP to ${recipient.fullName()}.")
     }
 
     fun receive(value: Double, sender: AccountEntity) {
         val tValue = tax(value, RECEIVE)
         balance += tValue
-        log("Received $tValue GP from ${sender.fullName()}.")
+        log("Received ${tValue.asString} GP from ${sender.fullName()}.")
     }
 
     fun receiveTax(value: Double, sender: AccountEntity) {
         val tValue = truncateToCopper(value)
         balance += tValue
-        log("Received $tValue GP in tax from ${sender.fullName()}.")
+        log("Received ${tValue.asString} GP in tax from ${sender.fullName()}.")
     }
 
     fun interest() {
         val tValue = tax(accountType.interestPercent/100 * balance, INTEREST)
         balance = truncateToCopper(balance + tValue)
-        log("Gained $tValue GP in interest.")
+        log("Gained ${tValue.asString} GP in interest.")
     }
 
     fun set(value: Double, actor: User) {
         val tValue = truncateToCopper(value)
         balance = tValue
-        log("${actor.effectiveName} set balance to $value GP.")
+        log("${actor.effectiveName} set balance to ${value.asString} GP.")
     }
 
     private fun log(description: String) {
         logs.add(LogEntity(0, this, description, balance))
     }
 
+    private val Double.asString
+        get() = numberFormat.format(this)
+
     private fun tax(value: Double, type: TransactionType) = accountType.taxConfig?.tax(value, type, this) ?: truncateToCopper(value)
 
     override fun asEmbed() = EmbedBuilder().setTitle(character.name).addField("Type", accountType.name, true)
-    .addField("Balance", "$balance GP", true).build()
+    .addField("Balance", "${balance.asString} GP", true).build()
 }

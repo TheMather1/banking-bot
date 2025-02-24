@@ -31,7 +31,7 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
     implementation("com.h2database", "h2", "2.2.224")
-    implementation("pw.chew", "jda-chewtils", "2.0")
+    implementation("pw.chew", "jda-chewtils", "2.1")
     implementation("net.dv8tion", "JDA", "5.2.1")
     implementation("no.mather.ttrpg", "dice-syntax", "0.2.0")
     implementation("org.postgresql", "postgresql", "42.6.0")

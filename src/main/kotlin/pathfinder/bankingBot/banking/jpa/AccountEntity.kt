@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import jakarta.persistence.CascadeType.*
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.User
+import pathfinder.bankingBot.NUMBER_FORMAT
 import pathfinder.bankingBot.banking.Denomination
 import pathfinder.bankingBot.banking.Paginatable
 import pathfinder.bankingBot.banking.TransactionType
@@ -27,8 +28,6 @@ class AccountEntity(
     @Column(nullable = false, scale = 2)
     var balance: Double = 0.0
 ) : Paginatable {
-
-    private val numberFormat = "%f.2"
 
     override fun toString() = "$accountType"
 
@@ -88,7 +87,7 @@ class AccountEntity(
         logs.add(LogEntity(0, this, description, balance))
     }
 
-    private fun format(double: Double) = numberFormat.format(double)
+    private fun format(double: Double) = NUMBER_FORMAT.format(double)
 
     private fun tax(value: Double, type: TransactionType) = accountType.taxConfig?.tax(value, type, this) ?: truncateToCopper(value)
 

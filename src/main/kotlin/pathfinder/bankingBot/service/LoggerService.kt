@@ -4,6 +4,7 @@ import jakarta.persistence.PostPersist
 import net.dv8tion.jda.api.JDA
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import pathfinder.bankingBot.NUMBER_FORMAT
 import pathfinder.bankingBot.banking.jpa.LogEntity
 
 @Service
@@ -13,15 +14,13 @@ class LoggerService {
         LoggerService.jda = jda
     }
 
-    private val numberFormat = "%f.2"
-
     @PostPersist
     private fun log(logEntity: LogEntity) {
         val bank = logEntity.account!!.character.bank
         val guild = jda.getGuildById(bank.id)!!
         if (bank.logChannel != null) {
             val channel = guild.getTextChannelById(bank.logChannel!!)
-            channel?.sendMessage("${logEntity.account!!.fullName()} - ${logEntity.description}\nCurrent balance: ${numberFormat.format(logEntity.balance)}")?.queue()
+            channel?.sendMessage("${logEntity.account!!.fullName()} - ${logEntity.description}\nCurrent balance: ${NUMBER_FORMAT.format(logEntity.balance)}")?.queue()
         }
     }
 

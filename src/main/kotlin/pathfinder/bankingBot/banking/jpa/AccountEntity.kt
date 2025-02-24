@@ -37,8 +37,8 @@ class AccountEntity(
     fun deposit(value: Double, actor: User? = null) {
         val tValue = tax(value, DEPOSIT)
         balance += tValue
-        if (actor == null) log("$character deposited ${tValue.asString} GP.")
-        else  log("${actor.effectiveName} deposited ${tValue.asString} GP.")
+        if (actor == null) log("$character deposited ${format(tValue)} GP.")
+        else  log("${actor.effectiveName} deposited ${format(tValue)} GP.")
     }
 
     fun earn(value: Double, denomination: Denomination, activity: String, roll: String) {
@@ -50,49 +50,48 @@ class AccountEntity(
     fun withdraw(value: Double, actor: User? = null) {
         val tValue = truncateToCopper(value)
         balance -= tValue
-        if (actor == null) log("$character withdrew ${tValue.asString} GP.")
-        else  log("${actor.effectiveName} withdrew ${tValue.asString} GP.")
+        if (actor == null) log("$character withdrew ${format(tValue)} GP.")
+        else  log("${actor.effectiveName} withdrew ${format(tValue)} GP.")
     }
 
     fun send(value: Double, recipient: AccountEntity) {
         val tValue = truncateToCopper(value)
         balance -= tValue
-        log("Sent ${tValue.asString} GP to ${recipient.fullName()}.")
+        log("Sent ${format(tValue)} GP to ${recipient.fullName()}.")
     }
 
     fun receive(value: Double, sender: AccountEntity) {
         val tValue = tax(value, RECEIVE)
         balance += tValue
-        log("Received ${tValue.asString} GP from ${sender.fullName()}.")
+        log("Received ${format(tValue)} GP from ${sender.fullName()}.")
     }
 
     fun receiveTax(value: Double, sender: AccountEntity) {
         val tValue = truncateToCopper(value)
         balance += tValue
-        log("Received ${tValue.asString} GP in tax from ${sender.fullName()}.")
+        log("Received ${format(tValue)} GP in tax from ${sender.fullName()}.")
     }
 
     fun interest() {
         val tValue = tax(accountType.interestPercent/100 * balance, INTEREST)
         balance = truncateToCopper(balance + tValue)
-        log("Gained ${tValue.asString} GP in interest.")
+        log("Gained ${format(tValue)} GP in interest.")
     }
 
     fun set(value: Double, actor: User) {
         val tValue = truncateToCopper(value)
         balance = tValue
-        log("${actor.effectiveName} set balance to ${value.asString} GP.")
+        log("${actor.effectiveName} set balance to ${format(tValue)} GP.")
     }
 
     private fun log(description: String) {
         logs.add(LogEntity(0, this, description, balance))
     }
 
-    private val Double.asString
-        get() = numberFormat.format(this)
+    private fun format(double: Double) = numberFormat.format(double)
 
     private fun tax(value: Double, type: TransactionType) = accountType.taxConfig?.tax(value, type, this) ?: truncateToCopper(value)
 
     override fun asEmbed() = EmbedBuilder().setTitle(character.name).addField("Type", accountType.name, true)
-    .addField("Balance", "${balance.asString} GP", true).build()
+    .addField("Balance", "${format(balance)} GP", true).build()
 }

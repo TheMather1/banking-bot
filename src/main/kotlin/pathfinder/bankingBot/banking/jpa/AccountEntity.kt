@@ -43,7 +43,7 @@ class AccountEntity(
     fun earn(value: Double, denomination: Denomination, activity: String, roll: String) {
         val tValue = tax(denomination(value), EARN)
         balance += tValue
-        log("$character earned $tValue GP $activity. [$roll $denomination]")
+        log("$character earned ${format(tValue)} GP $activity. [$roll $denomination]")
     }
 
     fun withdraw(value: Double, actor: User? = null) {

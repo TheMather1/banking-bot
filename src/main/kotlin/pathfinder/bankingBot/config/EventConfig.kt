@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class EventConfig {
 
-    @Bean
+    @Bean(destroyMethod = "")
     fun eventWaiter() = EventWaiter()
 
 }
